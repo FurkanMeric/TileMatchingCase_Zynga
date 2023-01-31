@@ -25,11 +25,7 @@ public class InputManager : MonoBehaviour
             touchEndPos = Input.mousePosition;
             RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero,
                 Single.NegativeInfinity, LayerMask.GetMask("Gem"));
-            if (hit != null)
-            {
-                Debug.Log(hit.transform.name);
-                OnGemTapped(hit.transform.GetComponent<Gem>());
-            }
+            OnGemTapped(hit.transform.GetComponent<Gem>());
         }
 
         // if (Input.GetMouseButton(0))

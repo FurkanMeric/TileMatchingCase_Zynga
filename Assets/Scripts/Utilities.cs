@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
@@ -8,30 +9,31 @@ public static class Utilities
     [CanBeNull]
     public static Gem Left(this Gem gem)
     {
-        if (!GameManager.Instance.generatedGems.ContainsKey(new Vector2Int(gem.gridPosition.x - 1, gem.gridPosition.y)))
-            return null;
-        return gem.gridPosition.x > 1 ? GameManager.Instance.generatedGems[new Vector2Int(gem.gridPosition.x - 1, gem.gridPosition.y)] : null;
+        return gem.GetGemWithOffset( -1,0);
     }
     [CanBeNull]
     public static Gem Right(this Gem gem)
     {
-        if (!GameManager.Instance.generatedGems.ContainsKey(new Vector2Int(gem.gridPosition.x + 1, gem.gridPosition.y)))
-            return null;
-        return GameManager.Instance.gridSize.x < gem.gridPosition.x ? GameManager.Instance.generatedGems[new Vector2Int(gem.gridPosition.x + 1, gem.gridPosition.y)] : null;
+        return gem.GetGemWithOffset( +1,0);
     }
     [CanBeNull]
     public static Gem Up(this Gem gem)
     {
-        if (!GameManager.Instance.generatedGems.ContainsKey(new Vector2Int(gem.gridPosition.x, gem.gridPosition.y - 1)))
-            return null;
-        return gem.gridPosition.y>1 ? GameManager.Instance.generatedGems[new Vector2Int(gem.gridPosition.x, gem.gridPosition.y - 1)] : null;
+        return gem.GetGemWithOffset( 0,-1);
     }
     [CanBeNull]
     public static Gem Down(this Gem gem)
     {
-        if (!GameManager.Instance.generatedGems.ContainsKey(new Vector2Int(gem.gridPosition.x, gem.gridPosition.y + 1)))
-            return null;
-        return GameManager.Instance.gridSize.y < gem.gridPosition.y ? GameManager.Instance.generatedGems[new Vector2Int(gem.gridPosition.x, gem.gridPosition.y + 1)] : null;
+        return gem.GetGemWithOffset( 0,+1);
+    }
+
+    [CanBeNull]
+    public static Gem GetGemWithOffset(this Gem gem, int offsetX, int offsetY)
+    {
+        var offset = new Vector2Int(offsetX, offsetY);
+        var targetGridPos = (gem.gridPosition + offset);
+        if (!GameManager.Instance.generatedGems.ContainsKey(targetGridPos)) return null;
+        return GameManager.Instance.generatedGems[targetGridPos];
     }
 
     public static List<Gem> GetAdjacentGems(this Gem gem)
@@ -42,8 +44,18 @@ public static class Utilities
 
     public static bool DoesMatch(this Gem gem, Gem otherGem)
     {
-        if (otherGem == null) return false;
-        return gem.sprite == otherGem.sprite;
+        try
+        {
+            if (otherGem != null && gem != null && gem.sprite == otherGem.sprite) 
+                return true;
+            return false;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        
     }
 
     public static bool HasMatch(this Gem gem, List<Gem> gems)
@@ -55,4 +67,6 @@ public static class Utilities
 
         return false;
     }
+    
+    
 }
